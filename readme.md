@@ -1,6 +1,5 @@
-## What is this?
-
-Just you wait folks!
+# Damn That's Delicious
+Yelp clone made in Node & Express using the [objecively] latest & greatest npm modules.
 
 ## Sample Data
 
