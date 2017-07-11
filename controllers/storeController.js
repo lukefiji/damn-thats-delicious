@@ -14,7 +14,12 @@ exports.addStore = (req, res) => {
 
 exports.createStore = async (req, res) => {
   // Only picks data from POST request defined in the schema
-  const store = new Store(req.body);
+  const store = await new Store(req.body).save();
   await store.save();
-  res.redirect("/");
+  req.flash(
+    "success",
+    `Successfully created ${store.name}. Care to leave a review?`
+  );
+  // Response comes from store variable
+  res.redirect(`/store/${store.slug}`);
 };
