@@ -4,6 +4,7 @@ function autocomplete(input, latInput, lngInput) {
 
   const dropdown = new google.maps.places.Autocomplete(input);
 
+  // Set autocomplete for google maps
   dropdown.addListener("place_changed", () => {
     const place = dropdown.getPlace();
     latInput.value = place.geometry.location.lat();
