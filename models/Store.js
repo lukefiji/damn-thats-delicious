@@ -22,7 +22,7 @@ const storeSchema = new mongoose.Schema({
   },
   location: {
     type: {
-      String,
+      type: String,
       default: "Point"
     },
     coordinates: [
@@ -35,19 +35,27 @@ const storeSchema = new mongoose.Schema({
       type: String,
       required: "You must supply an address!"
     }
-  }
+  },
+  photo: String
 });
 
 // Save name as slug on save
-storeSchema.pre("save", function(next) {
+storeSchema.pre("save", async function(next) {
   // Skip if name isn't changed
   if (!this.isModified("name")) {
     return next(); // Return to break out of function
   }
   this.slug = slug(this.name);
-  next();
+  // Find other stores that have a slug of name, name-1, name-2
+  const slugRegEx = new RegExp(`^(${this.slug})((-[0-9]*$)?)$`, "i");
+  const storesWithSlug = await this.constructor.find({ slug: slugRegEx });
 
-  // TODO: make more resilient so slugs are unique
+  // if slug exists
+  if (storesWithSlug.length) {
+    // Return the next slug number
+    this.slug = `${this.slug}-${storesWithSlug.length + 1}`;
+  }
+  next();
 });
 
 // Name it 'Store', and apply storeSchema
