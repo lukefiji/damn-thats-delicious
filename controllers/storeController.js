@@ -106,8 +106,14 @@ exports.getStoreBySlug = async (req, res, next) => {
 };
 
 exports.getStoresByTag = async (req, res) => {
-  // Static method on Store model
-  const tags = await Store.getTagsList();
   const tag = req.params.tag;
-  res.render("tag", { tags, tag, title: "Tags" });
+  const tagQuery = tag || { $exists: true }; // Returns store if at least one tag exists
+  const tagsPromise = Store.getTagsList(); // Static method on Store model
+
+  const storesPromise = Store.find({ tags: tagQuery });
+
+  // Await both async calls simultaneously
+  const [tags, stores] = await Promise.all([tagsPromise, storesPromise]);
+
+  res.render("tag", { tags, tag, stores, title: "Tags" });
 };
